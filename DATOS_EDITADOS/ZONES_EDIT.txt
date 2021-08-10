@@ -1,0 +1,17 @@
+                  "ZONE" Zones
+
+Date: 5/13/2021 1:26:37 AM
+
+Well         Zone_Name        Top        Bottom    
+SNRG-0002   Kope             6845       7638.5    
+SNRG-0002   UTICA            7638.5     7928.5        
+SNRG-0002   Trenton          7928.5     8072      
+SNRG-0003   Kope             7262.5     7942      
+SNRG-0003   UTICA            7942       8238.5         
+SNRG-0003   Trenton          8238.5     8388      
+SNRG-0001   Kope             5721.5     6393.5    
+SNRG-0001   Utica            6393.5     6677         
+SNRG-0001   Trenton          6677       6797.5    
+SNRG-0004   Kope             8223.5     8945      
+SNRG-0004   UTICA            8945       9219.5       
+SNRG-0004   Trenton          9219.5     9368      
