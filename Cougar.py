@@ -42,34 +42,34 @@ GR_min = df['GR'].min()
 df.loc[df.GR>80,'Shale']= 0
 df.loc[df.GR<80,'Shale']= 1
 
-#Identificación de litologias mediante Neutron y density con gamma ray
-df["Lit"] = (df["DEN"] - 1.95) - (1 - (5/3)*(df["NEU"]+0.15))
-
-#Creación de la gráfica de litología
-fig , axs = plt.subplots(figsize=(4,12))
-plt.plot(df['Lit'],df['DEPTH'])
-plt.xlabel('Litología')
-plt.ylabel('Profundidad')
-plt.ylim(max(df['DEPTH']),min(df['DEPTH']))
-plt.show()
-
-# fig.savefig("DEPTH_vs_Lit_ND.png")
-
-#Creacion de la litología con curvas
-#Si es mayor a 0.03 Dolomita 4
-df.loc[df.Lit_ND>0.03,'Litologia']= 4
-#Si es menor -0.03 Arenisca  2
-df.loc[df.Lit_ND < -0.03,'Litologia']= 2
-#Si esta en el rango de -0.03 a 0.03 limolita 3
-df.loc[(df.Lit_ND >= -0.03 and df.Lit_ND <= -0.03) ,'Litologia']= 3
-print(df)
+#Identificación de litologias mediante Neutron y Gamma Ray
+df["Lit_ND"] = (df["DEN"] - 1.95) - (1 - (5/3)*(df["NEU"]+0.15))
 
 # #Creación de la gráfica de litología
 # fig , axs = plt.subplots(figsize=(4,12))
-# plt.plot(df['Litologia'],df['DEPTH'])
+# plt.plot(df['Lit_ND'],df['DEPTH'])
 # plt.xlabel('Litología')
 # plt.ylabel('Depth')
 # plt.ylim(max(df['DEPTH']),min(df['DEPTH']))
-# fig.savefig("DEPTH_vs_Lit_ND.png")
+# # fig.savefig("DEPTH_vs_Lit_ND.png")
 
-# df.to_excel('registro_prueba.xlsx',sheet_name='prueba',index=False)
+#Creacion de la litología con curvas
+# Si es menor -0.03 Arenisca  2
+df.loc[df.Lit_ND < -0.03,'Litologia']= 2
+# Si esta en el rango de -0.03 a 0.03 limolita 3
+df.loc[df.Lit_ND >= -0.03,'Litologia']= 3
+#Si es mayor a 0.03 Dolomita 4
+df.loc[df.Lit_ND > 0.03,'Litologia']= 4
+
+
+df['Litologia'] = df['Litologia'] * df['Shale']
+
+df
+# # #Creación de la gráfica de litología
+fig , axs = plt.subplots(figsize=(4,12))
+plt.plot(df['Litologia'],df['DEPTH'])
+plt.xlabel('Litología')
+plt.ylabel('Depth')
+plt.ylim(max(df['DEPTH']),min(df['DEPTH']))
+# # fig.savefig("DEPTH_vs_Lit_ND.png")
+plt.show()
