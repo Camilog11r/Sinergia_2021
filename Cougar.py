@@ -11,17 +11,23 @@ w2 = r'./Well_Logging/SNRG-0002_basic_logs.las'
 w3 = r'./Well_Logging/SNRG-0003_basic_logs.las'
 w4 = r'./Well_Logging/SNRG-0004_basic_logs.las'
 
-las_1 = lasio.read(w1)
+print("""
+Bienvenido al programa de identificacion de litologias por favor en el siguiente espacio anexe la direccion del registro que ud desea leer""")
+
+w = input("Ingrese aca la direccion completa: ")
+
+las_1 = lasio.read(w2)
 # las_1.to_csv(stdout)
 df = las_1.df()
 df.reset_index(inplace =True)
 # df.to_excel("Registro_4.xlsx",sheet_name="Registro_4_Limpio",index=False)
 
 #Cambio de nombres para diferentes tipos de cabezales
-if "GRGC" in df:
+if ("GRGC") in df:
     df = df.rename(columns={'GRGC':'GR'})
-if ("RHOB" or "RHOZ") in df:
+if ("RHOB") in df:
     df = df.rename(columns={'RHOB':'DEN'})
+if ("RHOZ") in df:
     df = df.rename(columns={'RHOZ':'DEN'})
 if ("NPHI") in df:
     df = df.rename(columns={'NPHI':'NEU'})
@@ -129,17 +135,19 @@ df.loc[df.Vclay < 0.35, 'a'] = 1.65
 df.loc[df.Vclay < 0.15, 'a'] = 1.45
 df.loc[df.Vclay < 0.05, 'a'] = 1
 
-#Relacion de columnas 
-GR = df[['GR','AT90','Total_Poro']]
-val = GR.loc[df.GR == GR_max , 'Ayuda']
-print(val)
+#identificar valores relacionados con el Gamma Ray
+GR = df[df.GR == GR_max ]
+resis_GR = GR['AT90'].max()
+poro_GR = GR['Total_Poro'].max()
 
 
 #Calculo de porosidad efectiva
+poro_efectiva = (df.DEN_TOTAL - poro_GR * df.Vclay ) * 100
+df.loc[poro_efectiva > 0, 'Poro_efective'] = poro_efectiva
 
+# Calculo de la Sw de agua de indonesia
+df['Sw'] = (( ( (df.Vclay ** ( 2 - df.Vclay)/resis_GR) ** (1 / 2) ) + ( (df.Poro_efective ** df.m ) / df.RES_CORR ) ** ( 1 / 2 ) ) ** 2  * df.AT90 ) ** ( -1 / 2 )
 
-
-print(df)
 
 # Exportar a excel
 df.to_excel("Registro.xlsx",sheet_name="Registro_1_Limpio",index=False)
