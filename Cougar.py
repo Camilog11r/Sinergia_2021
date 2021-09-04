@@ -16,7 +16,7 @@ Bienvenido al programa de identificacion de litologias por favor en el siguiente
 
 w = input("Ingrese aca la direccion completa: ")
 
-las_1 = lasio.read(w2)
+las_1 = lasio.read(w1)
 # las_1.to_csv(stdout)
 df = las_1.df()
 df.reset_index(inplace =True)
@@ -147,6 +147,10 @@ df.loc[poro_efectiva > 0, 'Poro_efective'] = poro_efectiva
 
 # Calculo de la Sw de agua de indonesia
 df['Sw'] = (( ( (df.Vclay ** ( 2 - df.Vclay)/resis_GR) ** (1 / 2) ) + ( (df.Poro_efective ** df.m ) / df.RES_CORR ) ** ( 1 / 2 ) ) ** 2  * df.AT90 ) ** ( -1 / 2 )
+
+
+#Calculo de TOC
+
 
 
 # Exportar a excel
