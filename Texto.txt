@@ -1,2 +1,0 @@
-Cougar.py es el programa de litogias
-Leopard.py es el calculo de flujo de caja 

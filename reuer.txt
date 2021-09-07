@@ -1,9 +1,0 @@
-numpy
-matplotlib
-scipy
-tqdm
-striplog
-lasio
-wellpathpy
-petropy
-tkinter
