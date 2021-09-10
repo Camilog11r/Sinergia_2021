@@ -65,7 +65,7 @@ curve = curve.append({'Tiempo (meses)' : 0 , 'Flujo de Efectivo': -capex, 'Valor
 
 #Cálculo de VPN
 van = curve['Valor Presente'].sum()
-
+print("VAN: ", van)
 
 #Cálculo de TIR
 cash_flow = curve['Flujo de Efectivo'].tolist()
@@ -73,6 +73,8 @@ cash_flow.remove(-capex)
 cash_flow.insert(0,-capex)
 # print(cash_flow)
 irr = npf.irr(cash_flow)
+
+print("TIR:" ,irr)
 
 #PayBackTime________________________________
 cash_vpn = curve['Valor Presente'].tolist()
@@ -112,7 +114,7 @@ for t_index in range(2,t+2) :
     # print(accumulate)
 
 pbt = round(( - accumulate / (- accumulate + accumulate_1) ) + t_accumulate,2)
-print(pbt)
+print("Pay Back Time", pbt)
 
 curve['Flujo acumulado en VP'] = list_accumalte
 

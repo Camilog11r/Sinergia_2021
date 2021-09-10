@@ -6,6 +6,7 @@ from sys import stdout
 from openpyxl import Workbook
 import PySimpleGUI as sg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from mpl_toolkits import mplot3d
 
 
 # VARS CONSTS:
@@ -85,7 +86,7 @@ def well_log(w):
     df['Litologia'] = df['Litologia'] * df['Shale']
 
     # #Creación de la gráfica de litología
-    fig , axs = plt.subplots(figsize=(4,12))
+    fig , axs = plt.subplots(figsize=(3,10))
     plt.plot(df['Litologia'],df['DEPTH:1'])
     plt.grid()
     plt.xlabel('Litología')
@@ -96,7 +97,8 @@ def well_log(w):
                 2 : Sandstone formation
                 3 : Limolite formation
                 4 : Dolomite formation'''])
-    # # fig.savefig("DEPTH:1_vs_Lit_ND.png")
+    fig.savefig("Profundidad_litologia.png")
+    
 
     #Asignacion de fila de matriz density
     df.loc[df.Litologia == 0,'Matrix_DEN']= 2.65
@@ -107,11 +109,14 @@ def well_log(w):
     ## Si hay toc
 
     if not "TOC" in df:
+        df.loc[df.GR > 80,'TOC'] = ( 154.497 / df.DEN ) - 57.261
+        df.loc[df['DEPTH:1'] < 6000,'TOC'] = np.nan
+        
             #Calculo de m y Y del TOC
-        m_toc = 1 / ( ( 1 / 1.24 ) - ( 1 / df.Matrix_DEN ) )
-        y_toc = ( m_toc / df.Matrix_DEN )
+            # m_toc = 1 / ( ( 1 / 1.24 ) - ( 1 / df.Matrix_DEN ) )
+            # y_toc = ( m_toc / df.Matrix_DEN )
+            # df['TOC'] = ( m_toc / df.DEN ) + y_toc
 
-        df['TOC'] = ( m_toc / df.DEN ) + y_toc
 
     #Calculo de volumen de kerogeno
     VolK = (1.19 * df['TOC'] * df['DEN'])/( 100 * 1.24)
@@ -173,9 +178,9 @@ def well_log(w):
 
 
     # identificacion de zonas de interes
-    df.loc[df.TOC > 2, 'Interest_Zone'] = 1
+    df.loc[df.TOC > 2, 'Interest_Zone'] = df['TOC']
 
-    fig , axs = plt.subplots(figsize=(4,12))
+    fig , axs = plt.subplots(figsize=(3,10))
     plt.plot(df['Interest_Zone'],df['DEPTH:1'],'o')
     plt.grid()
     plt.xlabel('Interest_Zone')
@@ -183,43 +188,54 @@ def well_log(w):
     plt.ylim(max(df['DEPTH:1']),min(df['DEPTH:1']))
     plt.legend(['''Interest Zone'''])
     fig = plt.show()
+    fig.savefig('Zona_interes.png')
     # Exportar a excel
     # df.to_excel('Registro.xlsx',sheet_name="Registro_1_Limpio",)
+
+    
+    #diseño del pozo en 3D
+    v_hz = 3500
+    
+    r = np.arange(0,v_hz)
+    
+    x = r * (2**(1/2))
+    y = r * (2**(1/2))
+    z = - (v_iz / np.log(v_iz)) * np.log(np.arange(1,v_iz,(v_iz/v_hz)))
+
+    ax = plt.axes(projection='3d')
+    ax.plot3D(x, y, z)
 
     # Impresion de la gráfica y vista del archivo pandas
     # plt.show()
     
 
-# __________________________________________________________________________________
+# __________________________________________________________________________________ #
 
-#Creacion de la primera caja
+
+
+
 sg.theme('GreenMono')
-layout_1 = [      [sg.Text('''Bienvenido al programa Cougar de identificacion de litologias, 
+layout = [      
+            [sg.Text('''Bienvenido al programa Cougar de identificacion de litologias, 
 por favor en el siguiente espacio anexe la direccion del registro que usted desea leer
 Al dar click en Cerrar se cerrara el proceso''')],
 [sg.Text('Ingrese la direccion del archivo .las'),sg.InputText(),sg.FileBrowse()],
-[sg.Button('Leer')]
+[sg.Button('Leer')],
                 
+            [
+        sg.Column(layout_lito),
+        sg.VSeperator(),
+        sg.Column(layout_zone),
+                    
+]
 ]
 
 #Creacion de la segunda caja
-layout_2 = [
-    [sg.Text("Plot test")],
-    [sg.Canvas(key="-CANVAS-")],
-]
+# layout_ = [
+#     [sg.Text("Plot test")],
+#     [sg.Canvas(key="-CANVAS-")],
+# ]
 
-
-layout = [
-    [
-        sg.Column(layout_1),
-        sg.VSeperator(),
-        sg.Column(layout_2),
-    ]
-]
-
-
-
-                
 ### Creacion del Frontend
                 
 #Creacion de la ventana
@@ -241,4 +257,4 @@ while True:
     elif event == "Exportar imagenes y excel":
         pass
         
-_VARS['window'].close()
+window.close()
